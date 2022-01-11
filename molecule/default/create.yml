@@ -9,30 +9,8 @@
     - when: True #server.changed | default(false) | bool
       block:
 
-        - command: >
-            bash -x {{ hera_home }}/hera.sh run
-          register: hera_run
-          environment:
-            BUILD_PODMAN_IMAGE: "{{ podman_image }}"
-            CONTAINER_SERVER_HOSTNAME: "{{ container_server_hostname }}"
-            CONTAINER_SERVER_IP: "{{ container_server_ip }}"
-            WORKSPACE: "{{ workspace }}"
-            JOB_NAME: ansible
-            BUILD_ID: "{{ build_id }}"
-            JENKINS_UID: 1001
-            JENKINS_GUID: 1001
-            JENKINS_HOME_DIR: "{{ jenkins_homedir }}"
-            JENKINS_ACCOUNT_DIR: "{{ jenkins_account_dir }}"
-            HERA_HOME: "{{ hera_home }}"
-            HERA_SSH_KEY: "{{ ssh_key  }}"
-            HERA_HOSTNAME: "{{ hera_hostname  }}"
-            HERA_USERNAME: "{{ hera_user }}"
-            HERA_DEBUG: "{{ hera_debug | default('True') }}"
-
-        - debug:
-            msg: "{{ hera_run }}"
-
-#        - name: Ensure test container is running
+        - include_role:
+            name: hera
 #          containers.podman.podman_container:
 #            name: test_container
 #            state: started
