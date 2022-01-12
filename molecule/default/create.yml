@@ -11,6 +11,8 @@
 
     - command: >
         bash -x {{ hera_home }}/hera.sh run
+      args:
+        chdir: '/var/jenkins_home/workspace/ansible-ci-molecule-delegate/'
       register: hera_run
       environment:
         BUILD_PODMAN_IMAGE: "{{ podman_image }}"
