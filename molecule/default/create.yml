@@ -3,10 +3,30 @@
   hosts: all
   connection: local
   gather_facts: false
-    #no_log: "{{ molecule_no_log }}"
-  roles:
-    - hera
+  #no_log: "{{ molecule_no_log }}"
   tasks:
+
+    - command: >
+        bash -x {{ hera_home }}/hera.sh run
+      register: hera_run
+      environment:
+        BUILD_PODMAN_IMAGE: "{{ podman_image }}"
+        JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-child"
+        HERA_DEBUG: "{{ hera_debug | default('True') }}"
+        PUBLISH_PORT: 22000
+
+    - set_fact:
+        hera_created_instances:
+          - { address: 'olympus', user: 'jenkins',  port: '22000', identity_file:  '/var/jenkins_home/.ssh/id_rsa' }
+
+    - debug:
+        msg: "{{ hera_run }}"
+
+    #- name: Ensure test container is running
+    #  containers.podman.podman_container:
+    #    name: test_container
+    #    state: started
+    #    image: localhost/ubi8-ssh-ansible
 
     - when: True #server.changed | default(false) | bool
       block:
