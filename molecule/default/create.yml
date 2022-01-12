@@ -4,8 +4,6 @@
   connection: local
   gather_facts: false
   no_log: "{{ molecule_no_log }}"
-  vars:
-    ssh_key: '/var/jenkins_home/.ssh/id_rsa'
   tasks:
 
     - when: True #server.changed | default(false) | bool
@@ -22,17 +20,22 @@
 #            rm: yes
 #            ports:
 #              - "8080:22"
+        - name: Ensure hera_created_instances is defined"
+          assert:
+            that:
+              - hera_created_instances is defined
+              - hera_created_instances | length > 0
+            quiet: true
 
         - name: Populate instance config dict
           set_fact:
             instance_conf_dict: {
               'instance': "instance",
-              'address': "{{ item }}",
-              'user': "rpelisse",
-              'port': "22",
-              'identity_file': "{{ ssh_key }}", }
-          with_items:
-            - "127.0.0.1"
+              'address': "{{ item.address }}",
+              'user': "{{ item.user }}",
+              'port': "{{ item.port }}",
+              'identity_file': "{{ item.ssh_key }}", }
+          with_items: "{{ hera_created_instances  }}"
           register: instance_config_dict
 
         - debug:
