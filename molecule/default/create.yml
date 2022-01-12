@@ -19,7 +19,7 @@
         JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-child"
         HERA_HOSTNAME: "olympus"
         PUBLISH_PORT: 22000
-        JENKINS_HOME: "/home/jenkins/current"
+        JENKINS_HOME_DIR: "/home/jenkins/current"
 
     - set_fact:
         hera_created_instances:
