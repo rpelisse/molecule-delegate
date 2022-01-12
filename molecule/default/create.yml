@@ -18,6 +18,7 @@
         BUILD_PODMAN_IMAGE: "{{ podman_image }}"
         JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-child"
         HERA_DEBUG: "{{ hera_debug | default('True') }}"
+        HERA_HOSTNAME: "olympus"
         PUBLISH_PORT: 22000
 
     - set_fact:
