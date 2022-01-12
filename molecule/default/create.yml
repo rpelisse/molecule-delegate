@@ -5,7 +5,7 @@
   gather_facts: false
   #no_log: "{{ molecule_no_log }}"
   vars:
-    hera_home: ../hera/
+    hera_home: "{{ env.MOLECULE_PROJECT_DIRECTORY }}/hera/"
     podman_image: 'localhost/ansible'
   tasks:
 
