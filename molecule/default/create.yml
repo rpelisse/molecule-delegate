@@ -20,11 +20,12 @@
 #            rm: yes
 #            ports:
 #              - "8080:22"
+
         - name: Ensure hera_created_instances is defined"
           assert:
             that:
               - hera_created_instances is defined
-              - hera_created_instances | length > 0
+                #   - hera_created_instances | length > 0
             quiet: true
 
         - name: Populate instance config dict
