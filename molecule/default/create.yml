@@ -21,7 +21,7 @@
         JENKINS_HOME_DIR: "/home/jenkins/current/"
 
     - command: >
-        bash -x {{ hera_home }}/hera.sh run
+        bash -x {{ hera_home }}/hera.sh inspect
       args:
         chdir: '/var/jenkins_home/workspace/ansible-ci-molecule-delegate/'
       register: hera_inspect
