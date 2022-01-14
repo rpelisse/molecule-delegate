@@ -7,6 +7,6 @@
 
     - name: Creating a file with content
       copy:
-        dest: "/home/rpelisse/hello.txt"
+        dest: "hello.txt"
         content: |
          "hello"

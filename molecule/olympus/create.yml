@@ -3,44 +3,75 @@
   hosts: all
   connection: local
   gather_facts: false
+  no_log: False
   #no_log: "{{ molecule_no_log }}"
   vars:
-    hera_home: "/var/jenkins_home/workspace/ansible-ci-molecule-delegate/hera/"
+    hera_home: "{{ lookup('env', 'HERA_HOME') }}"
+    hera_debug: "{{ lookup('env', 'HERA_DEBUG') | default(False) }}"
     podman_image: 'localhost/molecule-slave'
+    hera_molecule_slave_sshd_port: "{{ lookup('env', 'BUILD_MOLECULE_SLAVE_SSHD_PORT') | default('undefined') }}"
+    workdir: "{{ lookup('env', 'WORKDIR') }}"
   tasks:
+
+    - assert:
+        that:
+          - hera_molecule_slave_sshd_port is defined
+          - hera_molecule_slave_sshd_port != 'undefined'
+          - workdir is defined
+        quiet: true
+
+    - stat:
+        path: "{{ hera_home }}"
+      register: is_workdir
+
+    - assert:
+        that:
+          - is_workdir is defined
+          - is_workdir.stat is defined
+          - is_workdir.stat.exists is defined
+          - is_workdir.stat.exists
+        quiet: true
+
+    - debug:
+        msg: "Workdir: {{ workdir }}"
 
     - command: >
         bash -x {{ hera_home }}/hera.sh run
       args:
-        chdir: '/var/jenkins_home/workspace/ansible-ci-molecule-delegate/'
+        chdir: "{{ workdir }}"
       register: hera_run
       environment:
         BUILD_PODMAN_IMAGE: "{{ podman_image }}"
-        JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-child"
+        JOB_NAME: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-child"
         HERA_HOSTNAME: "olympus"
-        HERA_DEBUG: true
+        HERA_DEBUG: "{{ lookup('env', 'HERA_DEBUG') | default('') }}"
         JENKINS_HOME_DIR: "/home/jenkins/current/"
+        CONTAINER_UID: '0'
+        CONTAINER_USERNAME: 'root'
         PUBLISHED_PORTS: "20222:22"
+        SYSTEMD_ENABLED: True
+        CONTAINER_COMMAND: '/usr/sbin/init'
+
 
     - command: >
         bash -x {{ hera_home }}/hera.sh inspect
       args:
-        chdir: '/var/jenkins_home/workspace/ansible-ci-molecule-delegate/'
+        chdir: "{{ workdir }}"
       register: hera_inspect
       environment:
         BUILD_PODMAN_IMAGE: "{{ podman_image }}"
-        JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-child"
+        JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-slave"
         HERA_HOSTNAME: "olympus"
         JENKINS_HOME_DIR: "/home/jenkins/current/"
 
-
-
     - set_fact:
         hera_created_instances:
-          - { address: 'olympus', user: 'jenkins',  port: '22000', identity_file:  '/var/jenkins_home/.ssh/id_rsa' }
+          - { address: 'olympus', user: 'root',  port: '20222', identity_file:  '/var/jenkins_home/.ssh/id_rsa' }
 
     - debug:
-        msg: "{{ hera_inspect }}"
+        msg: "Container created: {{ hera_run.stdout }}"
+      when:
+        - hera_debug
 
     #- name: Ensure test container is running
     #  containers.podman.podman_container:
@@ -74,7 +105,7 @@
               'address': "{{ item.address }}",
               'user': "{{ item.user }}",
               'port': "{{ item.port }}",
-              'identity_file': "{{ item.ssh_key }}", }
+              'identity_file': "{{ item.identity_file }}", }
           with_items: "{{ hera_created_instances  }}"
           register: instance_config_dict
 
