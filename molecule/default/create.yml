@@ -19,6 +19,7 @@
         JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-child"
         HERA_HOSTNAME: "olympus"
         JENKINS_HOME_DIR: "/home/jenkins/current/"
+        PUBLISHED_PORTS: "20222:22"
 
     - command: >
         bash -x {{ hera_home }}/hera.sh inspect
