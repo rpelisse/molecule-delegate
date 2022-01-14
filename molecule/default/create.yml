@@ -6,7 +6,7 @@
   #no_log: "{{ molecule_no_log }}"
   vars:
     hera_home: "/var/jenkins_home/workspace/ansible-ci-molecule-delegate/hera/"
-    podman_image: 'localhost/ansible'
+    podman_image: 'localhost/molecule-slave'
   tasks:
 
     - command: >
