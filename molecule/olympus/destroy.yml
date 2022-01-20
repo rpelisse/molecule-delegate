@@ -8,6 +8,7 @@
     hera_home: "{{ lookup('env', 'HERA_HOME') }}"
     hera_debug: "{{ lookup('env', 'HERA_DEBUG') | default(False) }}"
     workdir: "{{ lookup('env', 'WORKDIR') }}"
+    job_name: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-slave"
   tasks:
     - assert:
         that:
@@ -35,7 +36,7 @@
           no_log: False
           register: hera_stop
           environment:
-            JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-slave"
+            JOB_NAME: "{{ job_name }}"
             HERA_DEBUG: true
             HERA_HOSTNAME: "olympus"
       rescue:

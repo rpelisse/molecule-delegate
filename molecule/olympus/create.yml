@@ -11,6 +11,7 @@
     podman_image: 'localhost/molecule-slave'
     hera_molecule_slave_sshd_port: "{{ lookup('env', 'BUILD_MOLECULE_SLAVE_SSHD_PORT') | default('undefined') }}"
     workdir: "{{ lookup('env', 'WORKDIR') }}"
+    job_name: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-slave"
   tasks:
 
     - assert:
@@ -42,7 +43,7 @@
       register: hera_run
       environment:
         BUILD_PODMAN_IMAGE: "{{ podman_image }}"
-        JOB_NAME: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-slave"
+        JOB_NAME: "{{ job_name }}"
         HERA_HOSTNAME: "olympus"
         HERA_DEBUG: "{{ lookup('env', 'HERA_DEBUG') | default('') }}"
         JENKINS_HOME_DIR: "/home/jenkins/current/"
@@ -60,7 +61,7 @@
       register: hera_inspect
       environment:
         BUILD_PODMAN_IMAGE: "{{ podman_image }}"
-        JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-slave"
+        JOB_NAME: "{{ job_name }}"
         HERA_HOSTNAME: "olympus"
         JENKINS_HOME_DIR: "/home/jenkins/current/"
       when:
