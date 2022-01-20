@@ -42,7 +42,7 @@
       register: hera_run
       environment:
         BUILD_PODMAN_IMAGE: "{{ podman_image }}"
-        JOB_NAME: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-child"
+        JOB_NAME: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-slave"
         HERA_HOSTNAME: "olympus"
         HERA_DEBUG: "{{ lookup('env', 'HERA_DEBUG') | default('') }}"
         JENKINS_HOME_DIR: "/home/jenkins/current/"
@@ -63,6 +63,8 @@
         JOB_NAME: "{{ env.JOB_NAME | default('ansible') }}-slave"
         HERA_HOSTNAME: "olympus"
         JENKINS_HOME_DIR: "/home/jenkins/current/"
+      when:
+        - hera_debug
 
     - set_fact:
         hera_created_instances:
