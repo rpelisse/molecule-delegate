@@ -13,6 +13,7 @@
     workdir: "{{ lookup('env', 'WORKDIR') }}"
     job_name: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-slave"
   tasks:
+    - include_tasks: hera/hera.yml
 
     - assert:
         that:
@@ -49,7 +50,7 @@
         JENKINS_HOME_DIR: "/home/jenkins/current/"
         CONTAINER_UID: '0'
         CONTAINER_USERNAME: 'root'
-        PUBLISHED_PORTS: "20222:22"
+        PUBLISHED_PORTS: "{{ hera_molecule_slave_sshd_port }}:22"
         SYSTEMD_ENABLED: True
         CONTAINER_COMMAND: '/usr/sbin/init'
 
@@ -69,7 +70,7 @@
 
     - set_fact:
         hera_created_instances:
-          - { address: 'olympus', user: 'root',  port: '20222', identity_file:  '/var/jenkins_home/.ssh/id_rsa' }
+          - { address: 'olympus', user: 'root',  port: "{{ hera_molecule_slave_sshd_port }}", identity_file:  '/var/jenkins_home/.ssh/id_rsa' }
 
     - debug:
         msg: "Container created: {{ hera_run.stdout }}"
