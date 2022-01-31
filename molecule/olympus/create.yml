@@ -7,7 +7,8 @@
   #no_log: "{{ molecule_no_log }}"
   vars:
     hera_home: "{{ lookup('env', 'HERA_HOME') }}"
-    hera_debug: "{{ lookup('env', 'HERA_DEBUG') | default(False) }}"
+      #hera_debug: "{{ lookup('env', 'HERA_DEBUG') | default(False) }}"
+    hera_debug: True
     podman_image: 'localhost/molecule-slave'
     hera_molecule_slave_sshd_port: "{{ lookup('env', 'BUILD_MOLECULE_SLAVE_SSHD_PORT') | default('undefined') }}"
     workdir: "{{ lookup('env', 'WORKDIR') }}"
@@ -76,23 +77,8 @@
       when:
         - hera_debug
 
-    #- name: Ensure test container is running
-    #  containers.podman.podman_container:
-    #    name: test_container
-    #    state: started
-    #    image: localhost/ubi8-ssh-ansible
-
     - when: True #server.changed | default(false) | bool
       block:
-
-#          containers.podman.podman_container:
-#            name: test_container
-#            state: started
-#            image: localhost/ubi8-ssh-ansible
-#            privileged: yes
-#            rm: yes
-#            ports:
-#              - "8080:22"
 
         - name: Ensure hera_created_instances is defined"
           assert:
