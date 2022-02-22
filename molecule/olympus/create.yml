@@ -2,9 +2,8 @@
 - name: Create
   hosts: all
   connection: local
-  gather_facts: false
-  no_log: False
-  #no_log: "{{ molecule_no_log }}"
+  gather_facts: true
+  no_log: "{{ molecule_no_log }}"
   vars:
     hera_home: "{{ lookup('env', 'HERA_HOME') }}"
       #hera_debug: "{{ lookup('env', 'HERA_DEBUG') | default(False) }}"
@@ -14,6 +13,13 @@
     workdir: "{{ lookup('env', 'WORKDIR') }}"
     job_name: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-slave"
   tasks:
+
+    - debug:
+        msg: "Running on {{ ansible_nodename }} using Ansible v{{ ansible_version.full }}."
+      when:
+        - ansible_nodename is defined
+        - ansible_version is defined
+        - ansible_version.full is defined
 
     - assert:
         that:
