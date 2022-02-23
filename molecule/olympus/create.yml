@@ -13,13 +13,15 @@
     workdir: "{{ lookup('env', 'WORKDIR') }}"
     job_name: "{{ lookup('env', 'JOB_NAME') | default('ansible') }}-slave"
   tasks:
+    - assert:
+        that:
+          - job_name is defined
+          - podman_image is defined
+          - ansible_version is defined
+          - ansible_version.full is defined
 
     - debug:
-        msg: "Running on {{ ansible_nodename }} using Ansible v{{ ansible_version.full }}."
-      when:
-        - ansible_nodename is defined
-        - ansible_version is defined
-        - ansible_version.full is defined
+        msg: "{{ job_name }}: running Molecule test suite with podman image {{ podman_image }} using Ansible v{{ ansible_version.full }}. Dedicated SSH port is {{ hera_molecule_slave_sshd_port }} mapped to {{ podman_published_ports }} on container."
 
     - assert:
         that:
